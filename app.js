@@ -1,39 +1,40 @@
-// Firebase Config & Initialization
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-const firebaseConfig = {
-  databaseURL: "https://isfb-blood-donation-app-default-rtdb.firebaseio.com"
-};
+const app = initializeApp({ databaseURL: "https://isfb-blood-donation-app-default-rtdb.firebaseio.com" });
+const db = getDatabase(app);
 
-const app = initializeApp(firebaseConfig);
-const database = getDatabase(app);
-const donorsRef = ref(database, 'donors');
-
-// ১. রক্তদাতা নতুন রেজিস্ট্রেশন করলে ডাটাবেজে সেভ করা
-const donorForm = document.getElementById('donorForm');
-if (donorForm) {
-  donorForm.addEventListener('submit', (e) => {
+// ফর্ম সাবমিট হ্যান্ডলার
+document.getElementById('donorForm').addEventListener('submit', (e) => {
     e.preventDefault();
-    
-    const name = document.getElementById('name').value;
-    const phone = document.getElementById('phone').value;
-    const bloodGroup = document.getElementById('bloodGroup').value;
-    const location = document.getElementById('location').value;
-
-    push(donorsRef, {
-      name: name,
-      phone: phone,
-      bloodGroup: bloodGroup,
-      location: location,
-      createdAt: new Date().toISOString()
-    }).then(() => {
-      alert('ধন্যবাদ! আপনার নাম সফলভাবে রক্তদাতা হিসেবে নিবন্ধিত হয়েছে।');
-      donorForm.reset();
-    }).catch((error) => {
-      alert('দুঃখিত, কোনো সমস্যা হয়েছে। আবার চেষ্টা করুন।');
+    push(ref(db, 'donors'), {
+        name: document.getElementById('name').value,
+        phone: document.getElementById('phone').value,
+        blood: document.getElementById('bloodGroup').value
     });
-  });
+    alert('নিবন্ধিত হয়েছে!');
+});
+
+document.getElementById('requestForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    push(ref(db, 'requests'), {
+        patient: document.getElementById('reqPatient').value,
+        hospital: document.getElementById('reqHospital').value,
+        blood: document.getElementById('reqBlood').value
+    });
+    alert('অনুরোধ পোস্ট করা হয়েছে!');
+});
+
+// ডাটা দেখানো
+onValue(ref(db, 'donors'), (snapshot) => {
+    const list = document.getElementById('donorList');
+    if(snapshot.exists()){
+        list.innerHTML = '<h2 class="font-bold text-gray-700">রক্তদাতাদের তালিকা:</h2>';
+        Object.values(snapshot.val()).forEach(d => {
+            list.innerHTML += `<div class="p-2 border rounded text-sm">${d.name} - ${d.blood} (📞${d.phone})</div>`;
+        });
+    }
+});
 }
 
 // ২. ডাটাবেজ থেকে রক্তদাতাদের রিয়েল-টাইম লিস্ট দেখানো
