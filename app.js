@@ -1,10 +1,10 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
 const app = initializeApp({ databaseURL: "https://isfb-blood-donation-app-default-rtdb.firebaseio.com" });
 const db = getDatabase(app);
 
-// ফর্ম সাবমিট হ্যান্ডলার
+// রক্তদাতা রেজিস্ট্রেশন
 document.getElementById('donorForm').addEventListener('submit', (e) => {
     e.preventDefault();
     push(ref(db, 'donors'), {
@@ -12,28 +12,22 @@ document.getElementById('donorForm').addEventListener('submit', (e) => {
         phone: document.getElementById('phone').value,
         blood: document.getElementById('bloodGroup').value
     });
-    alert('নিবন্ধিত হয়েছে!');
+    alert('সফলভাবে নিবন্ধিত হয়েছে!');
+    document.getElementById('donorForm').reset();
 });
 
+// জরুরি রক্তের অনুরোধ (ফোন নম্বরসহ)
 document.getElementById('requestForm').addEventListener('submit', (e) => {
     e.preventDefault();
     push(ref(db, 'requests'), {
         patient: document.getElementById('reqPatient').value,
         hospital: document.getElementById('reqHospital').value,
+        phone: document.getElementById('reqPhone').value, // ফোন নম্বর সেভ হবে
         blood: document.getElementById('reqBlood').value
     });
     alert('অনুরোধ পোস্ট করা হয়েছে!');
+    document.getElementById('requestForm').reset();
 });
-
-// ডাটা দেখানো
-onValue(ref(db, 'donors'), (snapshot) => {
-    const list = document.getElementById('donorList');
-    if(snapshot.exists()){
-        list.innerHTML = '<h2 class="font-bold text-gray-700">রক্তদাতাদের তালিকা:</h2>';
-        Object.values(snapshot.val()).forEach(d => {
-            list.innerHTML += `<div class="p-2 border rounded text-sm">${d.name} - ${d.blood} (📞${d.phone})</div>`;
-        });
-    }
 });
 }
 
