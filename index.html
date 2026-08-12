@@ -66,6 +66,16 @@
                 </select>
                 <input type="text" id="searchLocation" placeholder="জেলা বা এলাকা (যেমন: চট্টগ্রাম)" class="p-2.5 border rounded-lg text-sm bg-gray-50 focus:ring-2 focus:ring-red-500 outline-none">
                 <button id="searchBtn" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 rounded-lg text-sm transition">
+                  <!-- সার্চ রেজাল্ট এবং কার্ড কন্টেইনার -->
+<section class="max-w-4xl mx-auto px-4 my-8">
+    <h3 class="text-xl font-bold text-gray-800 mb-4 text-center flex items-center justify-center">
+        <i class="fa-solid fa-address-card text-red-600 mr-2"></i> রক্তদাতাদের তালিকা
+    </h3>
+    <div id="donorCardList" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- এখানে ডাটাবেজ বা সার্চের কার্ডগুলো ভেসে উঠবে -->
+    </div>
+</section>
+                    
                     অনুসন্ধান করুন
                 </button>
             </div>
